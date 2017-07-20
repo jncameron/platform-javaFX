@@ -83,6 +83,7 @@ public class Main extends Application {
             jumpPlayer();
         }
 
+        //SpeedBurst doubles player speed for 2 seconds
         if (isPressed(KeyCode.SHIFT) && player.getTranslateY() >= 5) {
             speedBurst = true;
             Timeline timeline = new Timeline(new KeyFrame(
@@ -127,7 +128,7 @@ public class Main extends Application {
             for (Node platform : platforms) {
                 if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
                     if (movingRight) {
-                        if (player.getTranslateX() + 40 == platform.getTranslateX()) {
+                        if (player.getTranslateX() + 40 >= platform.getTranslateX()) {
                             return;
                         }
                     }
@@ -191,7 +192,6 @@ public class Main extends Application {
 
         if (canJump) {
             playerVelocity = playerVelocity.add(0, -30);
-            System.out.println(player.getTranslateY());
             canJump = false;
         }
     }
