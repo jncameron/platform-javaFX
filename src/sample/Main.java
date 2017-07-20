@@ -27,6 +27,7 @@ public class Main extends Application {
 
     private ArrayList<Node> platforms = new ArrayList<Node>();
     private ArrayList<Node> coins = new ArrayList<>();
+    private ArrayList<Node> ladders = new ArrayList<>();
 
     private Pane appRoot = new Pane();
     private Pane gameRoot = new Pane();
@@ -35,8 +36,10 @@ public class Main extends Application {
     private Node player;
     private Point2D playerVelocity = new Point2D(0, 0);
     private boolean canJump = true;
+    private boolean canClimb = false;
     private boolean speedBurst = false;
     private boolean stamina = true;
+
 
     private int levelWidth;
 
@@ -64,7 +67,8 @@ public class Main extends Application {
                         coins.add(coin);
                         break;
                     case '3':
-                        Node ladder = createEntity(j*60, i*60, 30, 60, Color.BROWN);
+                        Node ladder = createEntity(j*60, i*60, 50, 60, Color.BROWN);
+                        ladders.add(ladder);
                 }
             }
         }
@@ -101,11 +105,32 @@ public class Main extends Application {
         if (isPressed(KeyCode.D) && player.getTranslateX() + 40 <= levelWidth - 5) {
             movePlayerX(5);
         }
+        if (isPressed(KeyCode.W) && (canClimb)) {
+            movePlayerY(-5);
+        }
 
         //gravity
-        if (playerVelocity.getY() < 10) {
+        if (playerVelocity.getY() < 10 && !canClimb) {
             playerVelocity = playerVelocity.add(0, 1);
         }
+
+        //climb ladder
+        for (Node ladder : ladders) {
+            if (player.getTranslateX() > ladder.getTranslateX() && player.getTranslateX() < (ladder.getTranslateX() + 40)) {
+
+                canClimb = true;
+                System.out.println("ladder X: " + ladder.getTranslateX());
+                System.out.println("player X: " + player.getTranslateX());
+                System.out.println("can climb");
+            }
+            else {
+                canClimb = false;
+                System.out.println("ladder X: " + ladder.getTranslateX());
+                System.out.println("player X: " + player.getTranslateX());
+                System.out.println("can't!");
+            }
+        }
+
 
         movePlayerY((int)playerVelocity.getY());
 
