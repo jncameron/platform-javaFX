@@ -1,6 +1,8 @@
 package sample;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -10,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
 import java.util.ArrayList;
@@ -82,6 +85,9 @@ public class Main extends Application {
 
         if (isPressed(KeyCode.SHIFT) && player.getTranslateY() >= 5) {
             speedBurst = true;
+            Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(2000), ae -> speedBurst = false));
+            timeline.play();
         }
 
         if (isPressed(KeyCode.LEFT) && player.getTranslateX() >= 5) {
@@ -194,7 +200,6 @@ public class Main extends Application {
 
         if (canJump) {
             playerVelocity = playerVelocity.add(0, -35);
-            System.out.println(player.getTranslateY());
             canJump = false;
         }
     }
