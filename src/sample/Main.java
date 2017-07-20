@@ -36,7 +36,7 @@ public class Main extends Application {
     private Node player;
     private Point2D playerVelocity = new Point2D(0, 0);
     private boolean canJump = true;
-    private boolean canClimb = false;
+    private boolean climbing = false;
     private boolean speedBurst = false;
     private boolean stamina = true;
 
@@ -67,8 +67,9 @@ public class Main extends Application {
                         coins.add(coin);
                         break;
                     case '3':
-                        Node ladder = createEntity(j*60, i*60, 50, 60, Color.BROWN);
+                        Node ladder = createEntity(j*60, i*60, 60, 60, Color.BROWN);
                         ladders.add(ladder);
+                        break;
                 }
             }
         }
@@ -105,34 +106,26 @@ public class Main extends Application {
         if (isPressed(KeyCode.D) && player.getTranslateX() + 40 <= levelWidth - 5) {
             movePlayerX(5);
         }
-        if (isPressed(KeyCode.W) && (canClimb)) {
-            movePlayerY(-5);
+
+        if (isPressed(KeyCode.W)) {
+            climbPlayerUp();
+        }
+
+        if (isPressed(KeyCode.S)) {
+            climbPlayerDown();
         }
 
         //gravity
-        if (playerVelocity.getY() < 10 && !canClimb) {
+        if (playerVelocity.getY() < 10) {
             playerVelocity = playerVelocity.add(0, 1);
         }
 
-        //climb ladder
-        for (Node ladder : ladders) {
-            if (player.getTranslateX() > ladder.getTranslateX() && player.getTranslateX() < (ladder.getTranslateX() + 40)) {
+        //velocity if not climbing ladder
 
-                canClimb = true;
-                System.out.println("ladder X: " + ladder.getTranslateX());
-                System.out.println("player X: " + player.getTranslateX());
-                System.out.println("can climb");
-            }
-            else {
-                canClimb = false;
-                System.out.println("ladder X: " + ladder.getTranslateX());
-                System.out.println("player X: " + player.getTranslateX());
-                System.out.println("can't!");
-            }
+        if (!isClimbing()) {
+            movePlayerY((int)playerVelocity.getY());
         }
 
-
-        movePlayerY((int)playerVelocity.getY());
 
         for (Node coin : coins) {
             if(player.getBoundsInParent().intersects(coin.getBoundsInParent())) {
@@ -214,6 +207,7 @@ public class Main extends Application {
                         }
                     }
 
+
                     else {
                         if (player.getTranslateY() == platform.getTranslateX() + 60) {
                             return;
@@ -224,6 +218,36 @@ public class Main extends Application {
             }
             player.setTranslateY(player.getTranslateY() + (movingDown ? 1 : -1));
         }
+    }
+
+
+    private void climbPlayerUp() {
+        for (Node ladder : ladders) {
+            if (player.getBoundsInParent().intersects(ladder.getBoundsInParent())) {
+                    climbing = true;
+                    //player.setTranslateY(player.getTranslateY() - 1);
+                    movePlayerY(-5);
+            }
+        }
+    }
+
+    private void climbPlayerDown() {
+        for (Node ladder : ladders) {
+            if (player.getBoundsInParent().intersects(ladder.getBoundsInParent())) {
+                climbing = true;
+                //player.setTranslateY(player.getTranslateY() - 1);
+                movePlayerY(5);
+            }
+        }
+    }
+
+    private boolean isClimbing() {
+        for (Node ladder : ladders) {
+            if (player.getBoundsInParent().intersects(ladder.getBoundsInParent())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void jumpPlayer() {
