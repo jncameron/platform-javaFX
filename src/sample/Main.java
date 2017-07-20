@@ -30,6 +30,7 @@ public class Main extends Application {
     private Node player;
     private Point2D playerVelocity = new Point2D(0, 0);
     private boolean canJump = true;
+    private boolean speedBurst = false;
 
     private int levelWidth;
 
@@ -77,6 +78,10 @@ public class Main extends Application {
     private void update() {
         if (isPressed(KeyCode.SPACE) && player.getTranslateY() >= 5) {
             jumpPlayer();
+        }
+
+        if (isPressed(KeyCode.SHIFT) && player.getTranslateY() >= 5) {
+            speedBurst = true;
         }
 
         if (isPressed(KeyCode.LEFT) && player.getTranslateX() >= 5) {
@@ -127,28 +132,44 @@ public class Main extends Application {
                     }
                 }
             }
+            if (speedBurst) {
+                player.setTranslateX(player.getTranslateX() + (movingRight ? 2 : -2));
+            }
             player.setTranslateX(player.getTranslateX() + (movingRight ? 1 : -1));
         }
     }
 
     private void movePlayerY(int value) {
         boolean movingDown = value > 0;
+        boolean movingUp = value < 0;
 
         for (int i = 0; i < Math.abs(value); i++) {
             for (Node platform : platforms) {
                 if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
                     if (movingDown) {
+
                         if (player.getTranslateY() + 40 == platform.getTranslateY()) {
                             player.setTranslateY(player.getTranslateY() - 1);
                             canJump = true;
                             return;
                         }
                     }
+
+                    else if (movingUp) {
+
+                        if (player.getTranslateY() - 60 == platform.getTranslateY()) {
+//                            player.setTranslateY(player.getTranslateY() - 1);
+//                            canJump = false;
+                            return;
+                        }
+                    }
+
                     else {
                         if (player.getTranslateY() == platform.getTranslateX() + 60) {
                             return;
                         }
                     }
+
                 }
             }
             player.setTranslateY(player.getTranslateY() + (movingDown ? 1 : -1));
@@ -156,10 +177,20 @@ public class Main extends Application {
     }
 
     private void jumpPlayer() {
+        //no double jump
+
         if (canJump) {
             playerVelocity = playerVelocity.add(0, -30);
+            System.out.println(player.getTranslateY());
+            canJump = false;
+        }
+    }
 
-            //no double jumping
+    private void bigJumpPlayer() {
+
+        if (canJump) {
+            playerVelocity = playerVelocity.add(0, -35);
+            System.out.println(player.getTranslateY());
             canJump = false;
         }
     }
