@@ -91,10 +91,10 @@ public class Main extends Application {
             timeline.play();
         }
 
-        if (isPressed(KeyCode.LEFT) && player.getTranslateX() >= 5) {
+        if (isPressed(KeyCode.A) && player.getTranslateX() >= 5) {
             movePlayerX(-5);
         }
-        if (isPressed(KeyCode.RIGHT) && player.getTranslateX() + 40 <= levelWidth - 5) {
+        if (isPressed(KeyCode.D) && player.getTranslateX() + 40 <= levelWidth - 5) {
             movePlayerX(5);
         }
 
@@ -140,6 +140,9 @@ public class Main extends Application {
                 }
             }
             if (speedBurst) {
+                if (!isPressed(KeyCode.SHIFT) && player.getTranslateY() >= 5) {
+                    speedBurst = false;
+                }
                 player.setTranslateX(player.getTranslateX() + (movingRight ? 2 : -2));
             }
             player.setTranslateX(player.getTranslateX() + (movingRight ? 1 : -1));
