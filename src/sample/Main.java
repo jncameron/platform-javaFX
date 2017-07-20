@@ -61,6 +61,7 @@ public class Main extends Application {
                         Node coin = createEntity(j*60, i*60, 30, 30, Color.GOLD);
                         coins.add(coin);
                         break;
+                    case '3'
                 }
             }
         }
