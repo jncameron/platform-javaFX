@@ -33,11 +33,12 @@ public class Main extends Application {
 
     private int levelWidth;
 
-    private boolean dialogEvent = false, running = true;
-
     private void initContent() {
+        //background size and color
         Rectangle bg = new Rectangle(1200, 720);
+        bg.setFill(Color.LIGHTBLUE);
 
+        //block size
         levelWidth = LevelData.LEVEL1[0].length() * 60;
 
         for (int i = 0; i < LevelData.LEVEL1.length; i++) {
@@ -45,9 +46,10 @@ public class Main extends Application {
             for (int j = 0; j < line.length(); j++) {
                 switch (line.charAt(j)) {
                     case '0':
+
                         break;
                     case '1':
-                        Node platform = createEntity(j*60, i*60, 60, 60, Color.BROWN);
+                        Node platform = createEntity(j*60, i*60, 60, 60, Color.DARKGREEN);
                         platforms.add(platform);
                         break;
                     case '2':
@@ -60,6 +62,7 @@ public class Main extends Application {
 
         player = createEntity(0, 600, 40, 40, Color.BLUE);
 
+        //scrolling player across screen while moving
         player.translateXProperty().addListener((abs, old, newValue) -> {
             int offset = newValue.intValue();
 
@@ -93,8 +96,6 @@ public class Main extends Application {
         for (Node coin : coins) {
             if(player.getBoundsInParent().intersects(coin.getBoundsInParent())) {
                 coin.getProperties().put("alive", false);
-                dialogEvent = true;
-                running = false;
             }
         }
 
@@ -192,28 +193,7 @@ public class Main extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (running) {
                     update();
-                }
-
-                if (dialogEvent) {
-                    dialogEvent = false;
-                    keys.keySet().forEach(key -> keys.put(key, false));
-
-                    GameDialog dialog = new GameDialog();
-                    dialog.setOnCloseRequest(event -> {
-                        if (dialog.isCorrect()) {
-                            System.out.println("Correct");
-                        }
-                        else {
-                            System.out.println("Wrong");
-                        }
-
-                        running = true;
-
-                    });
-                    dialog.open();
-                }
 
             }
         };
