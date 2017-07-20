@@ -158,8 +158,12 @@ public class Main extends Application {
                     else if (movingUp) {
 
                         if (player.getTranslateY() - 60 == platform.getTranslateY()) {
-//                            player.setTranslateY(player.getTranslateY() - 1);
-//                            canJump = false;
+
+                            //restart gravity
+                            //stop player one pixel below overhead object
+                            playerVelocity = playerVelocity.add(0, 1);
+                            player.setTranslateY(player.getTranslateY() + 1);
+                            canJump = false;
                             return;
                         }
                     }
