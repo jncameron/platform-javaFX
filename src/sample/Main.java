@@ -148,9 +148,7 @@ public class Main extends Application {
             }
             if (speedBurst && stamina) {
                 if (!isPressed(KeyCode.SHIFT) && player.getTranslateY() >= 5) {
-                    Timeline timeline = new Timeline(new KeyFrame(
-                            Duration.millis(2000), ae -> speedBurst = false));
-                    timeline.play();
+                    speedBurst = false;
                 }
                 player.setTranslateX(player.getTranslateX() + (movingRight ? 2 : -2));
             }
