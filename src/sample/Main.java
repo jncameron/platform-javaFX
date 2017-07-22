@@ -3,8 +3,6 @@ package sample;
     testing
  */
 import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -13,9 +11,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import javafx.util.Duration;
+import javafx.scene.chart.*;
 
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +36,10 @@ public class Main extends Application {
     private boolean canJump = true;
     private boolean climbing = false;
     private boolean speedBurst = false;
-    private boolean stamina = true;
+    private int speedBurstCost = -2;
+    private int staminaMax = 1000;
+    private int stamina = staminaMax;
+    private boolean usingStamina = false;
 
 
     private int levelWidth;
@@ -89,15 +90,21 @@ public class Main extends Application {
     }
 
     private void update() {
+        System.out.printf("speedBurst %b, usingStamina %b, stamina %d\n", speedBurst, usingStamina, stamina);
+
+
         if (isPressed(KeyCode.SPACE) && player.getTranslateY() >= 5) {
             jumpPlayer();
         }
 
-        //SpeedBurst doubles player speed for 2 seconds
-        if (isPressed(KeyCode.SHIFT) && player.getTranslateY() >= 5) {
+        //SpeedBurst doubles player speed
+        if (isPressed(KeyCode.J) && player.getTranslateY() >= 5) {
             speedBurst = true;
-            staminaControl();
-
+            usingStamina = true;
+        }
+        if (!isPressed(KeyCode.J)) {
+            speedBurst = false;
+            usingStamina = false;
         }
 
         if (isPressed(KeyCode.A) && player.getTranslateX() >= 5) {
@@ -140,14 +147,19 @@ public class Main extends Application {
                 gameRoot.getChildren().remove(coin);
             }
         }
-
+        // Regenerate stamina
+        spendStamina(10);
     }
 
-    private void staminaControl() {
-        Timeline decrease = new Timeline(new KeyFrame(Duration.millis(2000), ae -> stamina = false));
-        decrease.play();
-        Timeline increase = new Timeline(new KeyFrame(Duration.millis(4000), ae -> stamina = true));
-            increase.play();
+
+    private void spendStamina(int cost) {
+        // If stamina is currently being used, any requests to regenerate it should be blocked.
+        if (!usingStamina || cost < 0) {
+            stamina += cost;
+        }
+        // Sets min/max for stamina values.
+        if (stamina < 0) stamina = 0;
+        if (stamina > staminaMax) stamina = staminaMax;
     }
 
     private void movePlayerX(int value) {
@@ -168,10 +180,9 @@ public class Main extends Application {
                     }
                 }
             }
-            if (speedBurst && stamina) {
-                if (!isPressed(KeyCode.SHIFT) && player.getTranslateY() >= 5) {
-                    speedBurst = false;
-                }
+            // speedBurst: player speeds up time, granting faster movement.
+            if (speedBurst && stamina > 0) {
+                spendStamina(speedBurstCost);
                 player.setTranslateX(player.getTranslateX() + (movingRight ? 2 : -2));
             }
             player.setTranslateX(player.getTranslateX() + (movingRight ? 1 : -1));
@@ -286,6 +297,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         initContent();
 
+        final NumberAxis xAxis = new NumberAxis();
         Scene scene = new Scene(appRoot);
         scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> keys.put(event.getCode(), false));
